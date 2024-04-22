@@ -13,17 +13,33 @@ function createElement(tag, classes = [], textContent = '') {
 }
 
 // Function to create a form input field
-function createInput(name, type, placeholder, id) {
-    // Create an input element with 'form-control' class
-    const input = createElement('input', ['form-control']);
-    input.setAttribute('name', name); // Set input name attribute
-    input.setAttribute('type', type); // Set input type attribute
-    input.setAttribute('id', id);     // Set input id attribute
-    input.setAttribute('placeholder', placeholder); // Set input placeholder attribute
-    input.required = true; // Mark the input as required
-    // Return the created input element
-    return input;
+function createInput(name, type, placeholder, id, options = []) {
+    if (type === 'radio' && options.length > 0) {
+        const container = createElement('div');
+        options.forEach(option => {
+            const label = createElement('label', ['radio-label', 'ms-5'], option.text);
+            const radio = createElement('input', ['ms-3']);
+            radio.setAttribute('type', type);
+            radio.setAttribute('name', name);
+            radio.setAttribute('value', option.value);
+            if (option.checked) {
+                radio.checked = true;
+            }
+            label.appendChild(radio);
+            container.appendChild(label);
+        });
+        return container; // Return the container holding radio buttons
+    } else {
+        const input = createElement('input', ['form-control']);
+        input.setAttribute('name', name);
+        input.setAttribute('type', type);
+        input.setAttribute('id', id);
+        input.setAttribute('placeholder', placeholder);
+        input.required = true;
+        return input;
+    }
 }
+
 
 // Function to create a select element with options
 function createSelect(name, options, id) {
@@ -66,7 +82,7 @@ container.appendChild(paragraphTag); // Append paragraph element to container
 // Create card elements
 const card = createElement('div', ['card']);
 // Create a card header element
-const cardHeader = createElement('div', ['card-header', 'p-3'], 'User Form');
+const cardHeader = createElement('div', ['card-header', 'p-3', 'text-center'], 'User Form');
 // Create a card body element
 const cardBody = createElement('div', ['card-body']);
 
@@ -96,18 +112,25 @@ fields.forEach((field, index) => {
     // Get the last row
     const row = form.lastElementChild;
     // Create a column element
-    const col = createElement('div', ['col-6', 'p-3']);
+    const col = createElement('div', ['col-6', 'p-3', 'form-group']);
 
     // If field is gender
     if (field.name === 'gender') {
-        // Create a select element
-        col.appendChild(createSelect(field.name, [
-            { value: 'male', text: 'Male' }, // Male option
-            { value: 'female', text: 'Female' } // Female option
-        ], field.id)); // Pass field id
+        // Create radio buttons for gender
+        col.appendChild(createInput(field.name, 'radio', field.placeholder, field.id, [
+            { value: 'male', text: 'Male', checked: true },
+            { value: 'female', text: 'Female' }
+        ]));
     } else if (field.name === 'food_choice') { // If field is choice of food
         // Create a select element with food options
         col.appendChild(createSelect(field.name, foodOptions, field.id));
+    } else if (field.name === 'address') { // If field is choice of food
+        // Create a select element with food options
+        const textArea = createElement('textarea', ['form-control']);
+        textArea.setAttribute('name', 'address');
+        textArea.setAttribute('id', 'address')
+        textArea.setAttribute('placeholder', field.placeholder)
+        col.appendChild(textArea);
     } else {
         // Create an input element
         col.appendChild(createInput(field.name, 'text', field.placeholder, field.id));
@@ -149,6 +172,8 @@ table.appendChild(tableBody);
 // Add form submission handler
 form.addEventListener('submit', function (event) { // Add submit event listener to form
     // Prevent default form submission
+    // prevents the default form submission behavior, 
+    // allowing us to handle the form submission ourselves. The function retrieves the values
     event.preventDefault();
     const formData = new FormData(form); // Get form data
     // Create a new table row
