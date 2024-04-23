@@ -143,6 +143,7 @@ const submitButton = createElement('button', ['btn', 'btn-primary', 'mt-3'], 'Su
 submitButton.setAttribute('id', 'submit'); // Set submit button id attribute
 form.appendChild(submitButton); // Append submit button to form
 
+const tableResponsive = createElement('div', ['table-responsive']);
 // Create table to append form data
 const table = createElement('table', ['table', 'table-striped', 'table-hover', 'mt-5']);
 // Create a table header element
@@ -200,6 +201,7 @@ form.addEventListener('submit', function (event) { // Add submit event listener 
 card.appendChild(cardHeader); // Append card header to card
 card.appendChild(cardBody); // Append card body to card
 cardBody.appendChild(form); // Append form to card body
+tableResponsive.appendChild(table); // Append the table to div
 container.appendChild(card); // Append card to container
-container.appendChild(table); // Append table to container
+container.appendChild(tableResponsive); // Append table to container
 document.body.appendChild(container); // Append container to body
